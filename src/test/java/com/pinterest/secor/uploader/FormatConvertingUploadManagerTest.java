@@ -99,8 +99,6 @@ public class FormatConvertingUploadManagerTest extends TestCase {
         DelimitedTextFileReaderWriterFactory textFileFactory = new DelimitedTextFileReaderWriterFactory();
         FileReader reader = textFileFactory.BuildFileReader(convertedFilePath, null);
         KeyValue kvout = reader.next();
-        System.out.println("kvout.offset: " + kvout.getOffset() + " kvout.value: " + new String(kvout.getValue()));
-        System.out.println("kv1.offset: " + kv1.getOffset() + " kv1.value: " + new String(kv1.getValue()));
         assertEquals(kv1.getOffset(), kvout.getOffset());
         assertArrayEquals(kv1.getValue(), kvout.getValue());
         

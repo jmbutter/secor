@@ -25,10 +25,11 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Wraps an Upload being managed by the AWS SDK TransferManager. `get`
- * blocks until the upload completes.
+ * Wraps an Upload of a temp file
+ * Deletes the temp file after the
+ * wrapped Handle.get() resolves
  *
- * @author Liam Stewart (liam.stewart@gmail.com)
+ * @author Jason Butterfield (jason.butterfield@outreach.io)
  */
 public class TempFileUploadHandle<T> implements Handle<T> {
     private static final Logger LOG = LoggerFactory.getLogger(TempFileUploadHandle.class);
@@ -42,7 +43,6 @@ public class TempFileUploadHandle<T> implements Handle<T> {
     }
 
     public T get() throws Exception {
-        // wait for upload handle to complete, then delete the temp files
         T result = mHandle.get();
         FileUtil.delete(mPath.getLogFilePath());
         FileUtil.delete(mPath.getLogFileCrcPath());
@@ -51,5 +51,9 @@ public class TempFileUploadHandle<T> implements Handle<T> {
             mPath.getLogFileCrcPath()
         );
         return result;
+    }
+
+    public LogFilePath getTempFilePath() {
+      return mPath;
     }
 }

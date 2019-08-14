@@ -16,23 +16,23 @@
  */
 package com.pinterest.secor.uploader;
 
-import com.pinterest.secor.uploader.UploadManager;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-
 import com.pinterest.secor.common.LogFilePath;
 import com.pinterest.secor.common.SecorConfig;
 import com.pinterest.secor.io.FileReader;
 import com.pinterest.secor.io.FileWriter;
 import com.pinterest.secor.io.KeyValue;
+import com.pinterest.secor.uploader.UploadManager;
 import com.pinterest.secor.util.CompressionUtil;
 import com.pinterest.secor.util.FileUtil;
+import com.pinterest.secor.util.IdUtil;
 import com.pinterest.secor.util.ReflectionUtil;
 
+import java.io.File;
+
 import org.apache.hadoop.io.compress.CompressionCodec;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manages uploads using the configured upload manager
@@ -47,17 +47,32 @@ public class FormatConvertingUploadManager extends UploadManager {
 
     public FormatConvertingUploadManager(SecorConfig config) throws Exception {
         super(config);
-        mUploadManager = ReflectionUtil.createUploadManager(mConfig.getInnerUploadManagerClass(), mConfig);
+        mUploadManager = createUploadManager();
     }
 
     @Override
-    public Handle<?> upload(LogFilePath localPath) throws Exception {
+    public TempFileUploadHandle<Handle<?>> upload(LogFilePath localPath) throws Exception {
         // convert the file from the internal format to the external format
-        LogFilePath convertedFilePath = localPath.withPrefix("convertedForUpload");
+        System.out.println("localPath: " + localPath);
+        System.out.println("mUploadManager: " + mUploadManager);
+        LogFilePath convertedFilePath = convertFile(localPath);
 
+        // The TempFileUploadHandle will delete the temp file after it resolves
+        return new TempFileUploadHandle(mUploadManager.upload(convertedFilePath), convertedFilePath);
+    }
+
+    /**
+     * This method converts a file 
+     * Exposed for testing only
+     */
+    public LogFilePath convertFile(LogFilePath srcPath) throws Exception {
         FileReader reader = null;
         FileWriter writer = null;
         int copiedMessages = 0;
+
+        String localConvertedPrefix = mConfig.getLocalPath() + '/' +
+            IdUtil.getLocalMessageDir() + "/convertedForUpload";
+        LogFilePath convertedFilePath = srcPath.withPrefix(localConvertedPrefix);
 
         try {
             CompressionCodec codec = null;
@@ -67,7 +82,7 @@ public class FormatConvertingUploadManager extends UploadManager {
                 extension = codec.getDefaultExtension();
             }
 
-            reader = createReader(localPath, codec);
+            reader = createReader(srcPath, codec);
             writer = createWriter(convertedFilePath, codec);
 
             KeyValue keyVal;
@@ -86,11 +101,11 @@ public class FormatConvertingUploadManager extends UploadManager {
 
         LOG.info("converted {} messages from {} to {}",
             copiedMessages,
-            localPath.getLogFilePath(),
+            srcPath.getLogFilePath(),
             convertedFilePath.getLogFilePath()
         );
 
-        return new TempFileUploadHandle(mUploadManager.upload(convertedFilePath), convertedFilePath);
+        return convertedFilePath;
     }
 
     /**
@@ -109,6 +124,13 @@ public class FormatConvertingUploadManager extends UploadManager {
         );
     }
 
+    /**
+     * This method is intended to be overwritten in tests.
+     * @param dstPath destination Path
+     * @param codec compression codec
+     * @return FileWriter created file writer
+     * @throws Exception on error
+     */
     protected FileWriter createWriter(LogFilePath dstPath, CompressionCodec codec) throws Exception {
         FileWriter writer = ReflectionUtil.createFileWriter(
           mConfig.getDestinationFileReaderWriterFactory(),
@@ -119,5 +141,14 @@ public class FormatConvertingUploadManager extends UploadManager {
         FileUtil.deleteOnExit(dstPath.getLogFilePath());
         FileUtil.deleteOnExit(dstPath.getLogFileCrcPath());
         return writer;
+    }
+
+    /**
+     * This method is intended to be overwritten in tests.
+     * @return UploadManager created upload manager
+     * @throws Exception on error
+     */
+    public UploadManager createUploadManager() throws Exception {
+        return ReflectionUtil.createUploadManager(mConfig.getInnerUploadManagerClass(), mConfig);
     }
 }

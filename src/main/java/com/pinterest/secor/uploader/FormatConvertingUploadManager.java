@@ -28,6 +28,7 @@ import com.pinterest.secor.util.IdUtil;
 import com.pinterest.secor.util.ReflectionUtil;
 
 import java.io.File;
+import java.nio.file.Paths;
 
 import org.apache.hadoop.io.compress.CompressionCodec;
 
@@ -53,25 +54,18 @@ public class FormatConvertingUploadManager extends UploadManager {
     @Override
     public TempFileUploadHandle<Handle<?>> upload(LogFilePath localPath) throws Exception {
         // convert the file from the internal format to the external format
-        System.out.println("localPath: " + localPath);
-        System.out.println("mUploadManager: " + mUploadManager);
         LogFilePath convertedFilePath = convertFile(localPath);
 
         // The TempFileUploadHandle will delete the temp file after it resolves
         return new TempFileUploadHandle(mUploadManager.upload(convertedFilePath), convertedFilePath);
     }
 
-    /**
-     * This method converts a file 
-     * Exposed for testing only
-     */
-    public LogFilePath convertFile(LogFilePath srcPath) throws Exception {
+    private LogFilePath convertFile(LogFilePath srcPath) throws Exception {
         FileReader reader = null;
         FileWriter writer = null;
         int copiedMessages = 0;
 
-        String localConvertedPrefix = mConfig.getLocalPath() + '/' +
-            IdUtil.getLocalMessageDir() + "/convertedForUpload";
+        String localConvertedPrefix = Paths.get(mConfig.getLocalPath(), IdUtil.getLocalMessageDir(), "convertedForUpload").toString();
         LogFilePath convertedFilePath = srcPath.withPrefix(localConvertedPrefix);
 
         try {
@@ -109,7 +103,7 @@ public class FormatConvertingUploadManager extends UploadManager {
     }
 
     /**
-     * This method is intended to be overwritten in tests.
+     * This method is intended to make mocking easier in tests.
      * @param srcPath source Path
      * @param codec compression codec
      * @return FileReader created file reader
@@ -125,7 +119,7 @@ public class FormatConvertingUploadManager extends UploadManager {
     }
 
     /**
-     * This method is intended to be overwritten in tests.
+     * This method is intended to make mocking easier in tests.
      * @param dstPath destination Path
      * @param codec compression codec
      * @return FileWriter created file writer
@@ -144,7 +138,7 @@ public class FormatConvertingUploadManager extends UploadManager {
     }
 
     /**
-     * This method is intended to be overwritten in tests.
+     * This method is intended to make mocking easier in tests.
      * @return UploadManager created upload manager
      * @throws Exception on error
      */

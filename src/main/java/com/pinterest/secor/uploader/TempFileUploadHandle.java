@@ -43,13 +43,18 @@ public class TempFileUploadHandle<T> implements Handle<T> {
     }
 
     public T get() throws Exception {
-        T result = mHandle.get();
-        FileUtil.delete(mPath.getLogFilePath());
-        FileUtil.delete(mPath.getLogFileCrcPath());
-        LOG.debug("deleting temp files {} and {}",
-            mPath.getLogFilePath(),
-            mPath.getLogFileCrcPath()
-        );
+        T result = null;
+        try {
+            result = mHandle.get();
+        } finally {
+            FileUtil.delete(mPath.getLogFilePath());
+            FileUtil.delete(mPath.getLogFileCrcPath());
+            LOG.debug("deleting temp files {} and {}",
+                mPath.getLogFilePath(),
+                mPath.getLogFileCrcPath()
+            );
+        }
+
         return result;
     }
 

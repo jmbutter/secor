@@ -37,6 +37,7 @@ public class SplitByFieldMessageParserTest extends TestCase {
     private Message mMessageWithTypeAndTimestamp;
     private Message mMessageWithoutTimestamp;
     private Message mMessageWithoutType;
+    private Message mMessageWithInvalidJson;
     private long timestamp;
 
     @Override
@@ -67,6 +68,9 @@ public class SplitByFieldMessageParserTest extends TestCase {
         byte messageWithoutType[] =
                 "{\"timestamp\":\"1405911096123\",\"id\":0,\"guid\":\"0436b17b-e78a-4e82-accf-743bf1f0b884\",\"isActive\":false,\"balance\":\"$3,561.87\",\"picture\":\"http://placehold.it/32x32\",\"age\":23,\"eyeColor\":\"green\",\"name\":\"Mercedes Brewer\",\"gender\":\"female\",\"company\":\"MALATHION\",\"email\":\"mercedesbrewer@malathion.com\",\"phone\":\"+1 (848) 471-3000\",\"address\":\"786 Gilmore Court, Brule, Maryland, 3200\",\"about\":\"Quis nostrud Lorem deserunt esse ut reprehenderit aliqua nisi et sunt mollit est. Cupidatat incididunt minim anim eiusmod culpa elit est dolor ullamco. Aliqua cillum eiusmod ullamco nostrud Lorem sit amet Lorem aliquip esse esse velit.\\r\\n\",\"registered\":\"2014-01-14T13:07:28 +08:00\",\"latitude\":47.672012,\"longitude\":102.788623,\"tags\":[\"amet\",\"amet\",\"dolore\",\"eu\",\"qui\",\"fugiat\",\"laborum\"],\"friends\":[{\"id\":0,\"name\":\"Rebecca Hardy\"},{\"id\":1,\"name\":\"Sutton Briggs\"},{\"id\":2,\"name\":\"Dena Campos\"}],\"greeting\":\"Hello, Mercedes Brewer! You have 7 unread messages.\",\"favoriteFruit\":\"strawberry\"}".getBytes("UTF-8");
         mMessageWithoutType = new Message("test", 0, 0, null, messageWithoutType, timestamp);
+
+        byte messageWithInvalidJson[] = "{/!%".getBytes("UTF-8");
+        mMessageWithInvalidJson = new Message("test", 0, 0, null, messageWithInvalidJson, timestamp);
     }
 
     @Test
@@ -176,6 +180,28 @@ public class SplitByFieldMessageParserTest extends TestCase {
 
         String partitions[] = {"event1", "dt=2014-07-21"};
         jsonMessageParser.getPreviousPartitions(partitions);
+    }
+
+    @Test
+    public void testExtractTimestampMillisWithMessageWithTimestamp() throws Exception {
+        SplitByFieldMessageParser jsonMessageParser = new SplitByFieldMessageParser(mConfig);
+
+        long result = jsonMessageParser.extractTimestampMillis(mMessageWithTypeAndTimestamp);
+        assertEquals(1405911096000l, result);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testExtractTimestampMillisWithMessageWithoutTimestamp() throws Exception {
+        SplitByFieldMessageParser jsonMessageParser = new SplitByFieldMessageParser(mConfig);
+
+        jsonMessageParser.extractTimestampMillis(mMessageWithoutTimestamp);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testExtractTimestampMillisWithMessageWithInvalidJson() throws Exception {
+        SplitByFieldMessageParser jsonMessageParser = new SplitByFieldMessageParser(mConfig);
+
+        jsonMessageParser.extractTimestampMillis(mMessageWithInvalidJson);
     }
 
 }

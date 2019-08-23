@@ -45,7 +45,11 @@ public class SplitByFieldMessageParser extends TimestampedMessageParser implemen
 
     @Override
     public long extractTimestampMillis(Message message) throws Exception {
-        throw new UnsupportedOperationException("Unsupported, use extractPartitions method instead");
+        JSONObject jsonObject = (JSONObject) JSONValue.parse(message.getPayload());
+        if (jsonObject == null) {
+            throw new RuntimeException("Failed to parse message as Json object");
+        }
+        return extractTimestampMillis(jsonObject);
     }
 
     @Override

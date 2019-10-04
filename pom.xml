@@ -122,31 +122,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.confluent</groupId>
-            <artifactId>kafka-avro-serializer</artifactId>
-            <version>2.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro</artifactId>
-            <version>1.9.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.parquet</groupId>
-            <artifactId>parquet-avro</artifactId>
-            <version>1.9.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java</artifactId>
-            <version>3.10.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java-util</artifactId>
-            <version>3.10.0</version>
-        </dependency>
-        <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
             <version>1.11.642</version>
@@ -247,43 +222,6 @@
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-openstack</artifactId>
             <version>2.9.2</version>
-        </dependency>
-
-        <!-- Parquet file format dependencies -->
-        <dependency>
-            <groupId>org.apache.parquet</groupId>
-            <artifactId>parquet-common</artifactId>
-            <version>${parquet.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.parquet</groupId>
-            <artifactId>parquet-encoding</artifactId>
-            <version>${parquet.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.parquet</groupId>
-            <artifactId>parquet-column</artifactId>
-            <version>${parquet.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.parquet</groupId>
-            <artifactId>parquet-hadoop</artifactId>
-            <version>${parquet.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.parquet</groupId>
-            <artifactId>parquet-protobuf</artifactId>
-            <version>${parquet.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.parquet</groupId>
-            <artifactId>parquet-thrift</artifactId>
-            <version>${parquet.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.thrift</groupId>
-            <artifactId>libthrift</artifactId>
-            <version>0.12.0</version>
         </dependency>
         <dependency>
             <groupId>com.twitter.common.zookeeper</groupId>
@@ -810,6 +748,14 @@
                                 <exclude>com/pinterest/secor/reader/LegacyKafkaMessageIterator.java</exclude>
                                 <exclude>com/pinterest/secor/common/LegacyKafkaClient.java</exclude>
                                 <exclude>com/pinterest/secor/uploader/AzureUploadManager.java</exclude>
+                                <exclude>com/pinterest/secor/io/impl/AvroFileReaderWriterFactory.java</exclude>
+                                <exclude>com/pinterest/secor/io/impl/AvroParquetFileReaderWriterFactory.java</exclude>
+                                <exclude>com/pinterest/secor/io/impl/JsonORCFileReaderWriterFactory.java</exclude>
+                                <exclude>com/pinterest/secor/io/impl/MessagePackSequenceFileReaderWriterFactory.java</exclude>
+                                <exclude>com/pinterest/secor/io/impl/ProtobufParquetFileReaderWriterFactory.java</exclude>
+                                <exclude>com/pinterest/secor/io/impl/ThriftParquetFileReaderWriterFactory.java</exclude>
+                                <exclude>com/pinterest/secor/common/AcroSchemaRegistry.java</exclude>
+                                <exclude>com/pinterest/secor/common/ConfigurableAvroSchemaRegistry.java</exclude>
                             </excludes>
                             <testExcludes>
                                 <exclude>com/pinterest/secor/timestamp/*</exclude>

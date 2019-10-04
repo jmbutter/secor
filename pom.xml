@@ -368,7 +368,6 @@
                 <excludes>
                     <exclude>kafka-legacy/**</exclude>
                     <exclude>kafka-2.0.0/**</exclude>
-                    <exclude>com/pinterest/secor/uploader/AzureUploadManager.java</exclude>
                 </excludes>
             </resource>
         </resources>
@@ -812,6 +811,7 @@
                                 <exclude>com/pinterest/secor/timestamp/*</exclude>
                                 <exclude>com/pinterest/secor/reader/LegacyKafkaMessageIterator.java</exclude>
                                 <exclude>com/pinterest/secor/common/LegacyKafkaClient.java</exclude>
+                                <exclude>com/pinterest/secor/uploader/AzureUploadManager.java</exclude>
                             </excludes>
                             <testExcludes>
                                 <exclude>com/pinterest/secor/timestamp/*</exclude>

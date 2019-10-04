@@ -343,11 +343,11 @@
             <artifactId>google-cloud-storage</artifactId>
             <version>1.62.0</version>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>com.microsoft.azure</groupId>
             <artifactId>azure-storage</artifactId>
             <version>8.0.0</version>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>org.apache.orc</groupId>
             <artifactId>orc-core</artifactId>

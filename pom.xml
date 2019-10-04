@@ -349,11 +349,6 @@
             <version>1.93.0</version>
         </dependency>
         <dependency>
-            <groupId>com.microsoft.azure</groupId>
-            <artifactId>azure-storage</artifactId>
-            <version>8.4.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.orc</groupId>
             <artifactId>orc-core</artifactId>
             <version>1.6.0</version>
@@ -814,6 +809,7 @@
                                 <exclude>com/pinterest/secor/timestamp/*</exclude>
                                 <exclude>com/pinterest/secor/reader/LegacyKafkaMessageIterator.java</exclude>
                                 <exclude>com/pinterest/secor/common/LegacyKafkaClient.java</exclude>
+                                <exclude>com/pinterest/secor/uploader/AzureUploadManager.java</exclude>
                             </excludes>
                             <testExcludes>
                                 <exclude>com/pinterest/secor/timestamp/*</exclude>
